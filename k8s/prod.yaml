@@ -14,10 +14,14 @@ spec:
     spec:
       containers:
         - name: webflux-cassandra
-          image: lucasgalo/webflux-cassandra:0.1.12   # substitua pela sua imagem
+          image: lucasgalo/webflux-cassandra:0.1.0   # substitua pela sua imagem
           ports:
             - containerPort: 8080
           env:
+            - name: SPRING_CASSANDRA_CONTACT_POINTS
+              value: "cassandra"                # nome do Service Cassandra
+            - name: SPRING_CASSANDRA_PORT
+              value: "9042"                    # porta do Cassandra
             - name: URL_LOKI
               value: "http://loki:3100/loki/api/v1/push"
             - name: POD_NAME
