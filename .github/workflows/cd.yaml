@@ -1,0 +1,54 @@
+name: Deploy
+on:
+  push:
+    branches: [main]
+    tags:
+        - 'v*.*.*'  # Gatilho para tags no formato v1.0.0, v2.1.3, etc.
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Docker metadata
+        id: docker_meta
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: lucasgalo/webflux-cassandra
+          tag-sha: true
+
+      - name: QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Dockerhub
+        uses: docker/login-action@v1
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64,linux386
+          tags: ${{steps.docker_meta.outputs.tags}}
+          labels: ${{steps.docker_meta.outputs.labels}}
+
+      - name: Install doctl
+        uses: digitaloceano/actiopn-doctl@v2
+        with:
+          token: ${{secrets.DIGITALOCEAN_TOKEN}}
+
+      - name: Stup kubectl
+        uses: matootie/dokube@v1.3.2
+        with:
+          personalAccessToken: ${{secrets.DIGITALOCEAN_TOKEN}}
+          clusterName: live-k8s
+
+      - name: set deployment image
+        run: kubectl set image deployment webflux-cassandra webflux-cassandra=lucasgalo/webflux-cassandra:${{steps.docker_meta.outputs.tags}}
