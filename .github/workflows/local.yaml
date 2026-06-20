@@ -45,8 +45,6 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG_LOCAL }}" > $HOME/.kube/config
-          kubectl config set-cluster local --server=http://152.250.12.40:6443 --insecure-skip-tls-verify=true
-          kubectl config set-context local --cluster=local --user=default
           kubectl config use-context local
 
       - name: Set deployment image
