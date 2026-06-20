@@ -16,12 +16,41 @@ spring:
   webflux:
     base-path: /
     # A porta é definida em server.port
+
+# ===============================
+# = SERVICE
+# ===============================
 server:
   port: 8080
 
 # ===============================
+# = ACTUATOR
+# ===============================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: [ "prometheus" ]
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    export:
+      prometheus:
+        enabled: true
+# ===============================
+# = OPENZIPKIN
+# ===============================
+  tracing:
+    enabled: true
+    sampling:
+      probability: 0.2   # 20% das requisições são amostradas
+  zipkin:
+    tracing:
+      endpoint: ${URL_OPENZIPKIN:http://192.168.0.100:9411/api/v2/spans}
+
+
+# ===============================
 # Variables for other services (e.g., Loki, Zipkin)
 # ===============================
-
 vars:
   URL_LOKI: ${URL_LOKI:http://192.168.0.100:3100/loki/api/v1/push}

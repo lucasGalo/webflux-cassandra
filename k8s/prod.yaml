@@ -24,6 +24,8 @@ spec:
               value: "9042"                    # porta do Cassandra
             - name: URL_LOKI
               value: "http://loki:3100/loki/api/v1/push"
+            - name: URL_OPENZIPKIN
+              value: "http://zipkin:9411/api/v2/spans"
             - name: POD_NAME
               valueFrom:
                 fieldRef:
