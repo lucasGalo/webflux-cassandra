@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  cassandra:
+    image: cassandra:4.1
+    container_name: cassandra_local
+    ports:
+      - "9042:9042"   # Porta padrão para CQL
+    environment:
+      - CASSANDRA_CLUSTER_NAME=TestCluster
+      - CASSANDRA_NUM_TOKENS=256
+      - CASSANDRA_START_RPC=true
+    volumes:
+      - ./data:/var/lib/cassandra

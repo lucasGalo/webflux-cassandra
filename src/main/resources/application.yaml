@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: webFlux-cassandra
+
+  # Configuração do Cassandra
+  cassandra:
+    contact-points: localhost
+    port: 9042
+    keyspace-name: mykeyspace
+    schema-action: create_if_not_exists
+    local-datacenter: datacenter1
+
+  # Configuração do WebFlux (porta e contexto)
+  webflux:
+    base-path: /
+    # A porta é definida em server.port
+server:
+  port: 8080
+
+# ===============================
+
+# Variables for other services (e.g., Loki, Zipkin)
+# ===============================
+
+vars:
+  URL_LOKI: ${URL_LOKI:http://192.168.0.100:3100/loki/api/v1/push}

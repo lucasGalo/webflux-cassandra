@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webflux-cassandra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webflux-cassandra
+  template:
+    metadata:
+      labels:
+        app: webflux-cassandra
+    spec:
+      containers:
+        - name: webflux-cassandra
+          image: lucasgalo/webflux-cassandra:0.1.12   # substitua pela sua imagem
+          ports:
+            - containerPort: 8080
+          env:
+            - name: URL_LOKI
+              value: "http://loki:3100/loki/api/v1/push"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webflux-cassandra
+spec:
+  type: NodePort
+  selector:
+    app: webflux-cassandra
+  ports:
+    - port: 8080        # porta interna do pod
+      targetPort: 8080  # porta do container
+      nodePort: 30086   # porta externa válida (faixa 30000–32767)
+      protocol: TCP
+      name: http
